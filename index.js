@@ -1,50 +1,66 @@
 const todoInput = document.getElementById("todoInput");
 const todoBtn = document.getElementById("todoBtn");
 const todoUl = document.getElementById("todoUl");
-
 const todo_key = "todo_key";
 let todoObj = [];
 
-todoBtn.onclick = function todoInsert() {
-  let todoInpValue = todoInput.value.trim();
-  if (todoInpValue === "") {
-    alert("you must enter something");
-    return;
-  }
+  todoUl.addEventListener("click", function(e){
+    const btn = e.target.closest(".todoDeleteBtn");
+    if(!btn) return;
+    const li = btn.closest("li");
+    if(!li) return
 
-  todoObj.push(todoInpValue);
-  saveTodos();
-  renderTodos();
-  todoInput.value = "";
-  todoInput.focus();
-  console.log(todoObj);
-  console.log(localStorage);
-};
+    const id = li.dataset.id;
 
-function saveTodos() {
-  localStorage.setItem(todo_key, JSON.stringify(todoObj));
+    const index = todoObj.findIndex((t) => t.id === id);
+   if(index === -1)return;
+
+     todoObj.splice(index, 1);
+   lStorageSave();
+  
+  })
+
+
+    todoBtn.onclick = function todoInsert() {
+      let todoInpValue = todoInput.value.trim();
+      if (todoInpValue === "") {
+        alert("you must enter something");
+        return;
+      }
+    const todo = {
+      id: crypto.randomUUID(),
+      text: todoInpValue
+    };
+      todoObj.push(todo);
+   lStorageSave();
+      todoInput.value = "";
+      todoInput.focus();
+    };
+
+function lStorageSave(){
+   saveTodos();
+    renderTodos();
 }
-function loadTodos() {
+function saveTodos(){
+  localStorage.setItem(todo_key, JSON.stringify(todoObj))
+}
+
+function loadTodos(){
   const raw = localStorage.getItem(todo_key);
-  todoObj = raw ? JSON.parse(raw) : [];
+  todoObj = raw? JSON.parse(raw) : [];
 }
-
 loadTodos();
 renderTodos();
 
-function renderTodos() {
-  let html = "";
 
-  todoObj.forEach((el, index) => {
-    html += `<li class="todoLi"> 
-   <span>${el}</span>
-       <button class="todoDeleteBtn" onclick="deleteItem(${index})">delete</button>
-  </li>`;
-  });
-  todoUl.innerHTML = html;
-}
-function deleteItem(index) {
-  todoObj.splice(index, 1);
-  saveTodos();
-  renderTodos();
-}
+    function renderTodos(){
+    let html = ""
+
+    todoObj.forEach((el) =>{
+    html+=`
+    <li data-id="${el.id}">${el.text}
+    <button class="todoDeleteBtn">Delete</button>
+    </li>`
+    })
+    todoUl.innerHTML = html;
+    }
