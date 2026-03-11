@@ -1,4 +1,4 @@
-body{
+body {
   margin: 0px;
 }
 #todoBtn {
@@ -9,22 +9,21 @@ body{
   cursor: pointer;
 }
 
-#todoUl{
+#todoUl {
   list-style-type: "";
   min-height: 500px;
 }
-
 
 .dragHandle:active {
   cursor: grabbing;
 }
 
-.completed .todoText{
+.completed .todoText {
   text-decoration: line-through;
   opacity: 0.6;
   user-select: none;
 }
-#todoUl li{
+#todoUl li {
   background-color: rgb(51, 49, 49);
   height: 62px;
   display: flex;
@@ -33,17 +32,17 @@ body{
   padding-right: 15px;
   margin-bottom: 2px;
 }
-#fieldsetTodo{
+#fieldsetTodo {
   background-color: rgb(41, 39, 39);
   color: white;
 
-  height:500px;
+  height: 500px;
   margin-left: 0px;
   border-color: black;
   margin-right: 0px;
 }
 
-.todoText{
-   word-break: break-word;
-flex: 1;
+.todoText {
+  word-break: break-word;
+  flex: 1;
 }

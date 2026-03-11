@@ -9,12 +9,12 @@ let dragBlocked = false;
 const filterAll = document.getElementById("filterAll");
 const filterActive = document.getElementById("filterActive");
 const filterCompleted = document.getElementById("filterCompleted");
-let currentFilter  = "all"
+let currentFilter = "all";
 
-filterAll.onclick = function (){
+filterAll.onclick = function () {
   currentFilter = "all";
   renderTodos();
-}
+};
 filterActive.onclick = function () {
   currentFilter = "active";
   renderTodos();
@@ -32,17 +32,17 @@ todoUl.addEventListener("drop", function (e) {
   if (!targetLi) return;
 
   const targetId = targetLi.dataset.id;
-    if (draggedId === targetId) return;
-    
-const draggedTodo = todoObj.find((t) => t.id === draggedId);
-const targetTodo = todoObj.find((t) => t.id === targetId);
+  if (draggedId === targetId) return;
+
+  const draggedTodo = todoObj.find((t) => t.id === draggedId);
+  const targetTodo = todoObj.find((t) => t.id === targetId);
   if (!draggedTodo || !targetTodo) return;
 
-if (draggedTodo.done !== targetTodo.done) return;
+  if (draggedTodo.done !== targetTodo.done) return;
 
   const fromIndex = todoObj.findIndex((t) => t.id === draggedId);
   const toIndex = todoObj.findIndex((t) => t.id === targetId);
-if(fromIndex.done !== toIndex.done) return;
+  if (fromIndex.done !== toIndex.done) return;
   if (fromIndex === -1 || toIndex === -1) return;
 
   const [movedItem] = todoObj.splice(fromIndex, 1);
@@ -54,26 +54,25 @@ if(fromIndex.done !== toIndex.done) return;
 
 todoUl.addEventListener("pointerdown", function (e) {
   dragBlocked =
-    !!e.target.closest(".todoDeleteBtn") ||
-    !!e.target.closest(".todoCheckBox");
+    !!e.target.closest(".todoDeleteBtn") || !!e.target.closest(".todoCheckBox");
 });
-todoUl.addEventListener("pointerup", function (e){
+todoUl.addEventListener("pointerup", function (e) {
   dragBlocked = false;
 });
-todoUl.addEventListener("pointercancel", function (e){
+todoUl.addEventListener("pointercancel", function (e) {
   dragBlocked = false;
-})
+});
 
 todoUl.addEventListener("dragstart", function (e) {
   const li = e.target.closest("li");
-   if(!li) return;
+  if (!li) return;
 
   if (dragBlocked) {
     e.preventDefault();
     return;
   }
 
-   draggedId = li.dataset.id;
+  draggedId = li.dataset.id;
 });
 
 todoUl.addEventListener("dragover", function (e) {
@@ -95,25 +94,23 @@ todoUl.addEventListener("click", function (e) {
   lStorageSave();
 });
 
+todoUl.addEventListener("change", function (e) {
+  const chekbox = e.target.closest(".todoCheckBox");
+  if (!chekbox) return;
 
-   todoUl.addEventListener("change", function(e){
-      const chekbox = e.target.closest(".todoCheckBox");
-      if(!chekbox) return;
+  const li = chekbox.closest("li");
+  if (!li) return;
 
-      const li = chekbox.closest("li");
-      if(!li) return;
+  const id = li.dataset.id;
 
-      const id = li.dataset.id
+  const todo = todoObj.find((t) => t.id === id);
+  if (!todo) return;
 
-      const todo = todoObj.find((t) => t.id === id);
-      if(!todo) return;
-
-      todo.done = chekbox.checked;  
-      todoObj.sort((a, b) => Number(a.done) - Number(b.done))
-      saveTodos();
-      renderTodos();
-      })
-
+  todo.done = chekbox.checked;
+  todoObj.sort((a, b) => Number(a.done) - Number(b.done));
+  saveTodos();
+  renderTodos();
+});
 
 todoBtn.onclick = function todoInsert() {
   let todoInpValue = todoInput.value.trim();
@@ -124,9 +121,9 @@ todoBtn.onclick = function todoInsert() {
   const todo = {
     id: crypto.randomUUID(),
     text: todoInpValue,
-    done: false
+    done: false,
   };
-  todoObj.push(todo);
+  todoObj.unshift(todo);
   lStorageSave();
   todoInput.value = "";
   todoInput.focus();
@@ -151,11 +148,11 @@ function renderTodos() {
   let html = "";
   let filteredTodos = todoObj;
   if (currentFilter === "active") {
-  filteredTodos = todoObj.filter((todo) => !todo.done);
-}
-if(currentFilter === "completed"){
-  filteredTodos = todoObj.filter((todo => todo.done))
-}
+    filteredTodos = todoObj.filter((todo) => !todo.done);
+  }
+  if (currentFilter === "completed") {
+    filteredTodos = todoObj.filter((todo) => todo.done);
+  }
   filteredTodos.forEach((el) => {
     const checked = el.done ? "checked" : "";
     const completed = el.done ? "completed" : "";
