@@ -19,4 +19,4 @@ Todo application built with vanilla JavaScript.
 Practice DOM manipulation, state management and browser storage.
 
 ## Live Demo
-https://matekvatchadze.github.io/GitWeb/
+https://matekvatchadze.github.io/todo-app/
