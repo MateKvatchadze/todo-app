@@ -2,7 +2,7 @@ const todoInput = document.getElementById("todoInput");
 const todoBtn = document.getElementById("todoBtn");
 const todoUl = document.getElementById("todoUl");
 const todo_key = "todo_key";
-let todoObj = [];
+let todoList = [];
 let draggedId = null;
 let dragBlocked = false;
 
@@ -34,19 +34,18 @@ todoUl.addEventListener("drop", function (e) {
   const targetId = targetLi.dataset.id;
   if (draggedId === targetId) return;
 
-  const draggedTodo = todoObj.find((t) => t.id === draggedId);
-  const targetTodo = todoObj.find((t) => t.id === targetId);
+  const draggedTodo = todoList.find((t) => t.id === draggedId);
+  const targetTodo = todoList.find((t) => t.id === targetId);
   if (!draggedTodo || !targetTodo) return;
 
   if (draggedTodo.done !== targetTodo.done) return;
 
-  const fromIndex = todoObj.findIndex((t) => t.id === draggedId);
-  const toIndex = todoObj.findIndex((t) => t.id === targetId);
-  if (fromIndex.done !== toIndex.done) return;
+  const fromIndex = todoList.findIndex((t) => t.id === draggedId);
+  const toIndex = todoList.findIndex((t) => t.id === targetId);
   if (fromIndex === -1 || toIndex === -1) return;
 
-  const [movedItem] = todoObj.splice(fromIndex, 1);
-  todoObj.splice(toIndex, 0, movedItem);
+  const [movedItem] = todoList.splice(fromIndex, 1);
+  todoList.splice(toIndex, 0, movedItem);
 
   saveTodos();
   renderTodos();
@@ -87,10 +86,10 @@ todoUl.addEventListener("click", function (e) {
 
   const id = li.dataset.id;
 
-  const index = todoObj.findIndex((t) => t.id === id);
+  const index = todoList.findIndex((t) => t.id === id);
   if (index === -1) return;
 
-  todoObj.splice(index, 1);
+  todoList.splice(index, 1);
   lStorageSave();
 });
 
@@ -103,11 +102,11 @@ todoUl.addEventListener("change", function (e) {
 
   const id = li.dataset.id;
 
-  const todo = todoObj.find((t) => t.id === id);
+  const todo = todoList.find((t) => t.id === id);
   if (!todo) return;
 
   todo.done = chekbox.checked;
-  todoObj.sort((a, b) => Number(a.done) - Number(b.done));
+  todoList.sort((a, b) => Number(a.done) - Number(b.done));
   saveTodos();
   renderTodos();
 });
@@ -123,7 +122,7 @@ todoBtn.onclick = function todoInsert() {
     text: todoInpValue,
     done: false,
   };
-  todoObj.unshift(todo);
+  todoList.unshift(todo);
   lStorageSave();
   todoInput.value = "";
   todoInput.focus();
@@ -134,35 +133,58 @@ function lStorageSave() {
   renderTodos();
 }
 function saveTodos() {
-  localStorage.setItem(todo_key, JSON.stringify(todoObj));
+  localStorage.setItem(todo_key, JSON.stringify(todoList));
 }
 
 function loadTodos() {
   const raw = localStorage.getItem(todo_key);
-  todoObj = raw ? JSON.parse(raw) : [];
+  todoList = raw ? JSON.parse(raw) : [];
 }
 loadTodos();
 renderTodos();
 
+function createTodoElement(todo) {
+  const li = document.createElement("li");
+  li.dataset.id = todo.id;
+  li.draggable = !todo.done;
+
+  if (todo.done) {
+    li.classList.add("completed");
+  }
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.classList.add("todoCheckBox");
+  checkbox.checked = todo.done;
+  checkbox.draggable = false;
+
+  const span = document.createElement("span");
+  span.classList.add("todoText");
+  span.textContent = todo.text;
+
+  const button = document.createElement("button");
+  button.classList.add("todoDeleteBtn");
+  button.textContent = "delete";
+  button.draggable = false;
+
+  li.append(checkbox, span, button);
+  return li;
+}
+
 function renderTodos() {
-  let html = "";
-  let filteredTodos = todoObj;
+  todoUl.innerHTML = "";
+
+  let filteredTodos = todoList;
+
   if (currentFilter === "active") {
-    filteredTodos = todoObj.filter((todo) => !todo.done);
+    filteredTodos = todoList.filter((todo) => !todo.done);
   }
   if (currentFilter === "completed") {
-    filteredTodos = todoObj.filter((todo) => todo.done);
+    filteredTodos = todoList.filter((todo) => todo.done);
   }
-  filteredTodos.forEach((el) => {
-    const checked = el.done ? "checked" : "";
-    const completed = el.done ? "completed" : "";
-    const draggable = el.done ? "false" : "true";
-    html += `
-    <li data-id="${el.id}" class="${completed}" draggable="${draggable}">
-        <input type="checkbox" class="todoCheckBox" ${checked} draggable="false">
-      <span class="todoText" >${el.text}</span>
-    <button class="todoDeleteBtn" draggable="false">Delete</button>
-    </li>`;
+
+  filteredTodos.forEach((todo) => {
+    const li = createTodoElement(todo);
+    todoUl.append(li);
   });
-  todoUl.innerHTML = html;
 }
