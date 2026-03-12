@@ -1,14 +1,22 @@
-# First JavaScript Project
+# Todo App
 
-Practice project created while learning JavaScript.
+Todo application built with vanilla JavaScript.
+
+## Features
+- add new tasks
+- mark tasks as completed
+- automatic sorting of completed tasks
+- drag and drop task reordering
+- task filters (all / active / completed)
+- localStorage persistence
 
 ## Technologies
 - HTML
 - CSS
-- JavaScript
+- JavaScript (Vanilla)
 
 ## Purpose
-Learning DOM manipulation and GitHub workflow.
+Practice DOM manipulation, state management and browser storage.
 
 ## Live Demo
 https://matekvatchadze.github.io/GitWeb/
